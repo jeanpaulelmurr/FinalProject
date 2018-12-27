@@ -28,81 +28,10 @@ public class SearchPage extends JFrame{
 		initComponents();
 	}
 	
-	
-	
-	
 
 	//methods
 	
-	private void initComponents() {
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		setSize(1000,650);
-		setLocation(dim.width/2-getWidth()/2,dim.height/2-getHeight()/2);
-		setVisible(true);
-		laptops_panel=new JPanel();
-		LayoutManager layout = new BoxLayout(laptops_panel, BoxLayout.Y_AXIS);
-		laptops_panel.setLayout(layout);
-		searchField=new JTextField(30);
-		searchField.setText("Search");
-		
-		searchField.addFocusListener(new FocusListener() {
-		      public void focusGained(FocusEvent e) {
-		    	  searchField.setText("");
-		      };
-		      public void focusLost(FocusEvent e) {
-		          searchField.setText("Search");
-		        }
-		});
-
-		searchField.addKeyListener(new KeyAdapter() {
-		      public void keyReleased(KeyEvent e) {
-		      }
-
-		      public void keyTyped(KeyEvent e) {
-		      }
-
-		      public void keyPressed(KeyEvent e) {
-		    	  switch(e.getKeyCode()) {
-		    	  	case KeyEvent.VK_BACK_SPACE:
-		    		  break;
-		    	  	case KeyEvent.VK_ENTER:
-		    	  		searchField.setText(searchField.getText());
-		    	  		if(searchField.getText().equals(""))
-		    	  			setStart();
-		    	  		else
-		    	  			searchForItem(Integer.parseInt(searchField.getText()));
-		    	  		break;
-		    	  }
-		      }
-		    });
-		
-		JPanel searchPanel =new JPanel();
-		searchPanel.add(searchField,BorderLayout.CENTER);
-		
-		laptops_panel.add(searchPanel);
-		
-		phones_panel = new JPanel();
-		
-		routers_panel =new JPanel();
-		
-		accessories_panel = new JPanel();
-		
-		parts_panel=new JPanel();
-		
-		setStart();
-		
-		categories.addTab("Laptops", laptops_panel);
-		categories.addTab("Cell phones",phones_panel);
-		categories.addTab("Routers", routers_panel);
-		categories.addTab("Computer parts",	 parts_panel);
-		categories.addTab("Accessories",accessories_panel);
-		
-		add(categories);
-		
-		
-	}
-
-
+	
 	//to create home page for every tab
 	private void setStart() {
 		laptop_images=new ArrayList();
@@ -260,7 +189,72 @@ public class SearchPage extends JFrame{
 	}
 
 
+	private void initComponents() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		setSize(1000,650);
+		setLocation(dim.width/2-getWidth()/2,dim.height/2-getHeight()/2);
+		setVisible(true);
+		laptops_panel=new JPanel();
+		LayoutManager layout = new BoxLayout(laptops_panel, BoxLayout.Y_AXIS);
+		laptops_panel.setLayout(layout);
+		searchField=new JTextField(30);
+		searchField.setText("Search");
+		
+		searchField.addFocusListener(new FocusListener() {
+		      public void focusGained(FocusEvent e) {
+		    	  searchField.setText("");
+		      };
+		      public void focusLost(FocusEvent e) {
+		          searchField.setText("Search");
+		        }
+		});
 
-	
+		searchField.addKeyListener(new KeyAdapter() {
+		      public void keyReleased(KeyEvent e) {
+		      }
+
+		      public void keyTyped(KeyEvent e) {
+		      }
+
+		      public void keyPressed(KeyEvent e) {
+		    	  switch(e.getKeyCode()) {
+		    	  	case KeyEvent.VK_BACK_SPACE:
+		    		  break;
+		    	  	case KeyEvent.VK_ENTER:
+		    	  		searchField.setText(searchField.getText());
+		    	  		if(searchField.getText().equals(""))
+		    	  			setStart();
+		    	  		else
+		    	  			searchForItem(Integer.parseInt(searchField.getText()));
+		    	  		break;
+		    	  }
+		      }
+		    });
+		
+		JPanel searchPanel =new JPanel();
+		searchPanel.add(searchField,BorderLayout.CENTER);
+		
+		laptops_panel.add(searchPanel);
+		
+		phones_panel = new JPanel();
+		
+		routers_panel =new JPanel();
+		
+		accessories_panel = new JPanel();
+		
+		parts_panel=new JPanel();
+		
+		setStart();
+		
+		categories.addTab("Laptops", laptops_panel);
+		categories.addTab("Cell phones",phones_panel);
+		categories.addTab("Routers", routers_panel);
+		categories.addTab("Computer parts",	 parts_panel);
+		categories.addTab("Accessories",accessories_panel);
+		
+		add(categories);
+		
+		
+	}
 	
 }	

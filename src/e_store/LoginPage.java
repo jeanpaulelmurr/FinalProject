@@ -10,10 +10,10 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
-public class HomePage extends JFrame {
+public class LoginPage extends JFrame {
 
 
-	public HomePage(String storeName) {
+	public LoginPage(String storeName) {
 		super(storeName);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(300, 500);
@@ -83,7 +83,7 @@ public class HomePage extends JFrame {
 		setVisible(true);
 	}
 	public static void main(String[] args) {
-		HomePage homepage=new HomePage("JStore");
+		LoginPage homepage=new LoginPage("JStore");
 
 	}
 

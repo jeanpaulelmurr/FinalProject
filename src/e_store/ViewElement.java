@@ -3,9 +3,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class ViewElement extends JFrame {
-
+	public static ArrayList cart=new ArrayList();
+	
 	
 	public ViewElement(Laptop laptop) {
 		super(laptop.name);
@@ -99,6 +101,28 @@ public class ViewElement extends JFrame {
 		
 		JPanel action = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton add2Cart=new JButton("Add to cart");
+		if(cart.contains(laptop)) {
+			add2Cart.setBackground(Color.RED);
+			add2Cart.setText("Remove from cart");
+		}
+		add2Cart.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(add2Cart.getBackground().equals(Color.RED)) {
+					add2Cart.setBackground(Color.WHITE);
+					add2Cart.setText("Add to cart");
+					cart.remove(laptop);
+				}else {
+				laptop.quantity=(int)quantity_value.getValue();
+				cart.add(laptop);
+				add2Cart.setText("Remove from cart");
+				add2Cart.setBackground(Color.RED);
+				}
+			}
+			
+		});
 		JButton back=new JButton("Back");
 		back.addActionListener(new ActionListener() {
 
@@ -112,6 +136,17 @@ public class ViewElement extends JFrame {
 			
 		});
 		JButton purchase=new JButton("Proceed to checkout");
+		purchase.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!cart.contains(laptop))
+					cart.add(laptop);
+				dispose();
+				PurchasePage pg=new PurchasePage("CheckOut",cart);
+			}
+			
+		});
 		action.add(back);
 		action.add(add2Cart);
 		action.add(purchase);
