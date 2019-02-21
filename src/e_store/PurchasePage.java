@@ -12,6 +12,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -28,7 +31,10 @@ public class PurchasePage extends JFrame {
 
 	//fields
 	private int amount=0;
-	public static int invoice=0;
+	public static int invoice;
+	Date date = Calendar.getInstance().getTime();
+	DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+    String todays = formatter.format(date);
 	private String[] columnNames= {"Barcode","Name","Specs","Unit price","Quantity"};
 	private static final String EMAIL_PATTERN = 
 		    "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -61,13 +67,22 @@ public class PurchasePage extends JFrame {
 	        try {
 	            //Creating a Message object to set the email content
 	            MimeMessage msg = new MimeMessage(session);
-	            String bill="Dear "+customer.name+",\n\nInvoice NO."+invoice+"\n";
-	            bill+="ID\tName\tSpecs\tQuantity\tPrice\n";
+	            StringBuilder sb=new StringBuilder();
+	            sb.append("<p>Dear "+customer.name+",</p><p>Invoice NO."+invoice+"</p>");
+	            sb.append("<table border=\"1\"><tr><th>ID</th><th>Name</th><th>Specs</th><th>Quantity</th><th>Price</th></tr>");
+	            
 	            for(int i=0;i<ViewElement.cart.size();i++) {
 	            	Laptop laptop=(Laptop)ViewElement.cart.get(i);
-	            	bill+=laptop.id+"\t"+laptop.name+"\t"+laptop.toString()+"\t"+laptop.quantity+"\t"+laptop.price+"\n";
+	            	sb.append("<tr><td>"+laptop.id+"</td><td>"+laptop.name+"</td><td>"+laptop.toString2()+"</td><td>"+laptop.quantity+"</td><td>"+laptop.price+"</td></tr>");
 	            }
-	            bill+="TOTAL= "+amount+"\n";
+	            sb.append("</table>\nTotal= "+amount+"\n");
+	            sb.append("<p>Jean-Paul\r\n" + 
+	            		"Sales | JStore | Electronics\r\n" + 
+	            		"phone: (123)123-1234\r\n" + 
+	            		"site: www.jstore.com\r\n" + 
+	            		"email: elecstore.inc@gmail.com\r\n" + 
+	            		"address: Fanar</p>");
+	            
 	            //Storing the comma seperated values to email addresses
 	            String to = customer.email;
 	            /*Parsing the String with defualt delimiter as a comma by marking the boolean as true and storing the email
@@ -77,7 +92,8 @@ public class PurchasePage extends JFrame {
 	            msg.setRecipients(Message.RecipientType.TO, address);
 	            msg.setSubject("Bill confirmation");
 	            msg.setSentDate(new Date());
-	            msg.setText(bill);
+	            String bill=sb.toString();
+	            msg.setContent(bill,"text/html");
 	            msg.setHeader("XPriority", "1");
 	            Transport.send(msg);
 	            System.out.println("Mail has been sent successfully");
@@ -88,6 +104,23 @@ public class PurchasePage extends JFrame {
 	
 
 	private void initComponents() {
+		try {
+			Connection conn=JStoreDb.getConnection();
+			java.sql.Statement sttmt=conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			String getInvoice="Select invoice_numb FROM PURCHASE";
+			ResultSet rs=sttmt.executeQuery(getInvoice);
+			rs.afterLast();
+			while (rs.previous()) {
+				invoice=rs.getInt("invoice_numb");
+				break;
+			}
+			sttmt.close();
+			conn.close();
+		}
+		catch(Exception e) {
+			e.getMessage();
+			}
+		invoice++;
 		JPanel billing_header=new JPanel();
 		JLabel title=new JLabel("Billing");
 		title.setFont (title.getFont ().deriveFont (64.0f));
@@ -177,7 +210,7 @@ public class PurchasePage extends JFrame {
 		JTable items = new JTable(tableModel);	
 		for(int i=0;i<ViewElement.cart.size();i++) {
 			Laptop temp=(Laptop)ViewElement.cart.get(i);
-            Object[] obj= {temp.id,temp.name,temp.toString(),temp.price,temp.quantity};
+            Object[] obj= {temp.id,temp.name,temp.toString2(),temp.price*temp.quantity,temp.quantity};
             tableModel.addRow(obj);
             } 
 				
@@ -227,8 +260,7 @@ public class PurchasePage extends JFrame {
 		    		  break;
 		    	  	case KeyEvent.VK_ENTER:
 		    			Float disc1=Float.valueOf(disc_field.getText());
-		    			amount=(int) (amount*(100-disc1)/100);
-		    			total_field.setText(Integer.toString(amount));
+		    			total_field.setText(Integer.toString((int) (amount*(100-disc1)/100)));
 		    	  		break;
 		    	  }
 		      }
@@ -278,7 +310,7 @@ public class PurchasePage extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				new SearchPage().setVisible(true);
+				SearchPage.getInstance().setVisible(true);
 				
 			}
 		});
@@ -291,8 +323,26 @@ public class PurchasePage extends JFrame {
 					JOptionPane.showMessageDialog(null, "Missing information", getWarningString(), JOptionPane.WARNING_MESSAGE);
 				}else {
 					Customer customer =new Customer(name_field.getText(),email_field.getText(),Integer.parseInt(phone_field.getText()));
-				sendMail(customer,ViewElement.cart);	
-				ViewElement.cart.clear();
+				sendMail(customer,ViewElement.cart);
+				
+				for(int i=0;i<ViewElement.cart.size();i++) {
+					Laptop temp=(Laptop)ViewElement.cart.get(i);
+
+					try {
+						Connection conn=JStoreDb.getConnection();
+						java.sql.Statement sttmt=conn.createStatement();
+						String query1="INSERT INTO PURCHASE (supplier_id,laptop_id,quantity,price,invoice_numb) values ("+temp.supplier+","+temp.id+","+temp.quantity+","+temp.price*temp.quantity+","+invoice+")";
+						ResultSet rs=sttmt.executeQuery(query1);
+						String query2="UPDATE LAPTOPS SET quantity=quantity-"+temp.quantity+" where laptop_id="+temp.id+"";
+						sttmt.executeUpdate(query2);
+						rs.close();
+						sttmt.close();
+						
+					}catch(Exception e1) {
+						System.out.println(e1.getMessage());
+					}
+				}
+				clear.doClick();
 				invoice++;
 				}
 			}

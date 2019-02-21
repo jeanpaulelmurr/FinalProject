@@ -13,7 +13,6 @@ public class JStoreDb {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection con=DriverManager.getConnection(url,uname,pass);
-			System.out.println("Connected");
 			return con;
 			
 		}catch(Exception e) {

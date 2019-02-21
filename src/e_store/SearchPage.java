@@ -16,15 +16,17 @@ import javax.swing.*;
 public class SearchPage extends JFrame{
 	
 	//fields
+	private static SearchPage searchPage=new SearchPage();
 	JTabbedPane categories=new JTabbedPane();
 	ArrayList laptops_array,laptop_images;
 	JTextField searchField;
-	JPanel laptops_panel,phones_panel,routers_panel , accessories_panel,parts_panel;
+	JPanel laptops_panel,parts_panel;
 	JPanel startingLaptops=new JPanel(new GridLayout(3,1));
 	Map<JLabel, Laptop> mapLaptops = new HashMap<JLabel, Laptop>(25);
 	
 	//constructor
-	public SearchPage() {
+	private SearchPage() {
+		super("JStore");
 		initComponents();
 	}
 	
@@ -101,7 +103,7 @@ public class SearchPage extends JFrame{
 			sttmt.close();
 			
 		}catch(Exception e) {
-			
+			e.getMessage();
 		}
 	
 		for(int i=0;i<laptop_images.size();i++)
@@ -139,7 +141,7 @@ public class SearchPage extends JFrame{
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						// TODO Auto-generated method stub
-						dispose();
+						setVisible(false);
 						ViewElement ve=new ViewElement(mapLaptops.get(tempImg));
 						
 					}
@@ -193,7 +195,7 @@ public class SearchPage extends JFrame{
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(1000,650);
 		setLocation(dim.width/2-getWidth()/2,dim.height/2-getHeight()/2);
-		setVisible(true);
+		
 		laptops_panel=new JPanel();
 		LayoutManager layout = new BoxLayout(laptops_panel, BoxLayout.Y_AXIS);
 		laptops_panel.setLayout(layout);
@@ -232,29 +234,23 @@ public class SearchPage extends JFrame{
 		    });
 		
 		JPanel searchPanel =new JPanel();
+		JButton adv_search=new JButton("Advanced");
 		searchPanel.add(searchField,BorderLayout.CENTER);
-		
-		laptops_panel.add(searchPanel);
-		
-		phones_panel = new JPanel();
-		
-		routers_panel =new JPanel();
-		
-		accessories_panel = new JPanel();
+		searchPanel.add(adv_search);
+		laptops_panel.add(searchPanel,BorderLayout.NORTH);
 		
 		parts_panel=new JPanel();
 		
 		setStart();
-		
-		categories.addTab("Laptops", laptops_panel);
-		categories.addTab("Cell phones",phones_panel);
-		categories.addTab("Routers", routers_panel);
-		categories.addTab("Computer parts",	 parts_panel);
-		categories.addTab("Accessories",accessories_panel);
-		
-		add(categories);
-		
+		add(laptops_panel);
+		setVisible(true);
 		
 	}
+
+		   //Get the only object available
+	public static SearchPage getInstance(){
+		return searchPage;
+		}
+	
 	
 }	

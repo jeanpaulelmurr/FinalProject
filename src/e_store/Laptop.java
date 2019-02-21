@@ -30,7 +30,10 @@ public class Laptop {
 	public String toString() {
 		return  name +" " + cpu +" "+ram+" RAM "+vga+" VGA $"+price;
 	}
-
+	
+	public String toString2() {
+		return  cpu +" "+ram+" RAM "+vga+" VGA";
+	}
 	
 	
 }

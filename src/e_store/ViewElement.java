@@ -81,7 +81,7 @@ public class ViewElement extends JFrame {
 		elt_details.add(color_value);
 		JLabel label_quantity=new JLabel("Quantity: ");
 		elt_details.add(label_quantity);
-		JSpinner quantity_value=new JSpinner(new SpinnerNumberModel(1,1,laptop.quantity,1));
+		JSpinner quantity_value=new JSpinner(new SpinnerNumberModel(0,0,laptop.quantity,1));
 		elt_details.add(quantity_value);
 		JLabel label_price=new JLabel("Price: ");
 		elt_details.add(label_price);
@@ -129,8 +129,7 @@ public class ViewElement extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				Frame[] frame=SearchPage.getFrames();
-				frame[0].setVisible(true);
+				SearchPage.getInstance().setVisible(true);;
 				
 			}
 			
@@ -140,8 +139,10 @@ public class ViewElement extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!cart.contains(laptop))
+				if(!cart.contains(laptop)) {
+					laptop.quantity=(int)quantity_value.getValue();
 					cart.add(laptop);
+				}
 				dispose();
 				PurchasePage pg=new PurchasePage("CheckOut",cart);
 			}
